@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ namespace：必须有值，自定义的唯一字符串
+ 推荐使用：dao 接口的全限定名称
+-->
+<mapper namespace="com.dhk.dao.StudentDao">
+    <!--
+    <select>: 查询数据， 标签中必须是 select 语句
+    id: sql 语句的自定义名称，推荐使用 dao 接口中方法名称，
+    使用名称表示要执行的 sql 语句
+    resultType: 查询语句的返回结果数据类型，使用全限定类名
+    -->
+    <select id="selectStudents" resultType="com.dhk.domain.Student">
+        <!--要执行的 sql 语句-->
+        select id,name,email,age from student order by id
+    </select>
+    <select id="selectStudentById" parameterType="java.lang.Integer" resultType="com.dhk.domain.Student">
+        <!--要执行的 sql 语句-->
+        select id,name,email,age from student where id=#{id}
+    </select>
+
+    <insert id="insertStudent">
+        insert into student values (#{id},#{name},#{email},#{age})
+    </insert>
+
+    <!--多个参数使用@Param命名-->
+    <select id="selectMultiParam" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student where name=#{myname} or age=#{myage}
+    </select>
+
+    <!--多个参数， 使用java对象的属性值，作为参数实际值
+       使用对象语法： #{属性名,javaType=类型名称,jdbcType=数据类型} 很少用。
+                   javaType:指java中的属性数据类型。
+                   jdbcType:在数据库中的数据类型。
+                   例如： #{paramName,javaType=java.lang.String,jdbcType=VARCHAR}
+
+       我们使用的简化方式： #{属性名}  ，javaType, jdbcType的值mybatis反射能获取。不用提供
+
+   -->
+    <select id="selectMultiParamObject" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student where name=#{paramName} or age=#{paramAge}
+    </select>
+
+    <select id="selectMultiParamStudent" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student where name=#{name} or age=#{age}
+    </select>
+
+    <!--模糊查询like-->
+    <select id="selectTestLikeOne" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student where name like #{name}
+    </select>
+
+    <select id="selectTestLikeTwo" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student where name like "%" #{name} "%"
+    </select>
+
+    <!--条件查询if-->
+    <select id="selectStudentIf" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student where id>0
+        <if test="name!=null and name!=''">
+            name=#{name}
+        </if>
+        <if test="age>0">
+            and age>#{age}
+        </if>
+    </select>
+
+    <!--条件查询where-->
+    <select id="selectStudentWhere" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student
+        <where>
+            <if test="name!=null and name!=''">
+                name=#{name}
+            </if>
+            <if test="age>0">
+                and age>#{age}
+            </if>
+        </where>
+    </select>
+
+    <!--PageHelper分页查询-->
+    <select id="selectStudentPageHelper" resultType="com.dhk.domain.Student">
+        select id,name,email,age from student order by id
+    </select>
+
+</mapper>
